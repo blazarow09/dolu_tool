@@ -2,7 +2,8 @@ lib.addKeybind({
     name = 'dolu_tool:open',
     description = locale('command_openui', '~b~>~w~'),
     defaultKey = Config.openMenuKey,
-    onPressed = function(self)
+    onPressed = function()
+        if Client.inputFocused then return end
         if Config.usePermission and not lib.callback.await('dolu_tool:isAllowed', 100, true) then return end
 
         if not IsNuiFocused() and not IsPauseMenuActive() then
@@ -18,7 +19,8 @@ lib.addKeybind({
     name = 'tpm',
     description = locale('command_tpm', '~b~>~w~'),
     defaultKey = Config.teleportMarkerKey,
-    onPressed = function(self)
+    onPressed = function()
+        if Client.inputFocused then return end
         if Config.usePermission and not lib.callback.await('dolu_tool:isAllowed', 100, true) then return end
 
         local marker = GetFirstBlipInfoId(8)
@@ -84,7 +86,8 @@ lib.addKeybind({
     name = 'noclip',
     description = locale('command_noclip', '~b~>~w~'),
     defaultKey = Config.toggleNoclipKey,
-    onPressed = function(self)
+    onPressed = function()
+        if Client.inputFocused then return end
         if Config.usePermission and not lib.callback.await('dolu_tool:isAllowed', 100, true) then return end
 
         Client.noClip = not Client.noClip
@@ -93,6 +96,7 @@ lib.addKeybind({
 })
 
 RegisterCommand('goback', function()
+    if Client.inputFocused then return end
     if Config.usePermission and not lib.callback.await('dolu_tool:isAllowed', 100, true) then return end
 
     if not Client.lastCoords then

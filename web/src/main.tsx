@@ -9,6 +9,40 @@ import { ModalsProvider } from '@mantine/modals'
 import { RecoilRoot } from 'recoil'
 import LocaleProvider from './providers/LocaleProvider'
 import { isEnvBrowser } from './utils/misc'
+import { fetchNui } from './utils/fetchNui'
+
+  /**
+   * Prevents keybinds from firing while typing in input fields.
+   * MutationObserver catches dynamically added inputs (modals, etc.)
+   * and attaches focus/blur listeners that toggle SetNuiFocusKeepInput.
+   */
+  ; (() => {
+    const INPUT_SELECTOR = 'input, textarea, select, [contenteditable="true"], [role="combobox"], [role="textbox"], [role="spinbutton"]'
+    const handled = new WeakSet<Element>()
+
+    const attachListeners = (elements: NodeListOf<Element> | Element[]) => {
+      elements.forEach((el) => {
+        if (handled.has(el)) return
+        handled.add(el)
+        el.addEventListener('focus', () => fetchNui('dolu_tool:setInputFocus', false))
+        el.addEventListener('blur', () => fetchNui('dolu_tool:setInputFocus', true))
+      })
+    }
+
+    const processNode = (node: Node) => {
+      if (!(node instanceof Element)) return
+      if ((node as HTMLElement).matches?.(INPUT_SELECTOR)) attachListeners([node])
+      if (node.childNodes.length > 0) attachListeners(node.querySelectorAll(INPUT_SELECTOR))
+    }
+
+    new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) processNode(node)
+      }
+    }).observe(document.body, { childList: true, subtree: true })
+
+    attachListeners(document.body.querySelectorAll(INPUT_SELECTOR))
+  })()
 
 if (isEnvBrowser()) {
   const root = document.getElementById('root')

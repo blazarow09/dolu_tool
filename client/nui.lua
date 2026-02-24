@@ -95,10 +95,19 @@ RegisterNUICallback('dolu_tool:deleteVehicle', function(_, cb)
     end
 end)
 
+RegisterNUICallback('dolu_tool:setInputFocus', function(keepGameInput, cb)
+    cb(1)
+    Client.inputFocused = not keepGameInput -- true when typing in input
+    if Client.isMenuOpen then
+        SetNuiFocusKeepInput(keepGameInput)
+    end
+end)
+
 RegisterNUICallback('dolu_tool:exit', function(_, cb)
     cb(1)
     SetNuiFocus(false, false)
     SetNuiFocusKeepInput(false)
+    Client.inputFocused = false
 
     SendNUIMessage({
         action = 'setGizmoEntity',

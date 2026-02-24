@@ -36,6 +36,7 @@ elseif lib.context == 'client' then
     Client = {
         noClip = false,
         isMenuOpen = false,
+        inputFocused = false,
         currentTab = 'home',
         lastLocation = json.decode(GetResourceKvpString('dolu_tool:lastLocation')),
         portalPoly = false,
