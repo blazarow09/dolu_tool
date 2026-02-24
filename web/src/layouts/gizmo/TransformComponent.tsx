@@ -49,20 +49,27 @@ export const TransformComponent = React.memo(({ space, mode, currentEntity, setC
   }, []);
 
   const handleObjectDataUpdate = useCallback((): void => {
-    // Just send position/rotation, let Lua decide what to do
-    fetchNui('dolu_tool:updateGizmoTransform', {
-      position: {
-        x: mesh.current.position.x,
-        y: -mesh.current.position.z,
-        z: mesh.current.position.y
-      },
-      rotation: {
-        x: MathUtils.radToDeg(mesh.current.rotation.x),
-        y: MathUtils.radToDeg(-mesh.current.rotation.z),
-        z: MathUtils.radToDeg(mesh.current.rotation.y)
-      }
-    });
-  }, [mesh]);
+    const position = {
+      x: mesh.current.position.x,
+      y: -mesh.current.position.z,
+      z: mesh.current.position.y
+    };
+    const rotation = {
+      x: MathUtils.radToDeg(mesh.current.rotation.x),
+      y: MathUtils.radToDeg(-mesh.current.rotation.z),
+      z: MathUtils.radToDeg(mesh.current.rotation.y)
+    };
+
+    fetchNui('dolu_tool:updateGizmoTransform', { position, rotation });
+
+    if (currentEntity) {
+      setCurrentEntity({
+        ...currentEntity,
+        position: position as TransformEntity['position'],
+        rotation: rotation as TransformEntity['rotation']
+      });
+    }
+  }, [mesh, currentEntity, setCurrentEntity]);
 
   const handleMouseDown = useCallback(() => {
     onMouseDown?.()
